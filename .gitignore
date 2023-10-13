@@ -34,8 +34,7 @@ build/
 .vscode/
 
 ### Java ###
-=======
->>>>>>> 5f06d0582336158b2ff958ec7dfacabcb28ddf7b
+
 # Compiled class file
 *.class
 
