@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.adsologist.adsologist.dao.UserRepository;
+import com.adsologist.adsologist.dto.UserRequestDTO;
 import com.adsologist.adsologist.entity.User;
 import com.adsologist.adsologist.exceptions.UserAlreadyExistsException;
 import com.adsologist.adsologist.exceptions.UserCreationException;
@@ -25,7 +26,7 @@ public class UserService {
     public UserResponse createUser(User user) {
         User foundUser = userRepository.findByUsername(user.getUsername());
         if(Objects.nonNull(foundUser)){
-            throw new UserAlreadyExistsException("User with Id:"+user.getUsername()+"Already exists in the database");
+            throw new UserAlreadyExistsException("User with UserName: "+user.getUsername()+"Already exists in the database");
         }
         User savedUser =  userRepository.save(user);
         log.info("User saved with id: " + savedUser.getId());
@@ -103,9 +104,9 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public UserResponse updateUser(User user, int id) {
+    public UserResponse updateUser(UserRequestDTO user, int id) {
         User oldUser = null;
-        Optional<User> optionalUser = userRepository.findById(user.getId());
+        Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
             throw new UserNotFoundException("No users in DB with id: "+id);
         }

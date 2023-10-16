@@ -1,6 +1,7 @@
 package com.adsologist.adsologist.controller;
 
 
+import com.adsologist.adsologist.dto.UserRequestDTO;
 import com.adsologist.adsologist.entity.User;
 import com.adsologist.adsologist.response.UserResponse;
 import com.adsologist.adsologist.service.UserService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @Api(value = "User Registration Service", description = "Operations pertaining to user management")
 public class UserController {
     @Autowired
@@ -47,9 +49,9 @@ public class UserController {
 
     @PutMapping("/updateUser/{id}")
     @ApiOperation(value = "Update User")
-    public ResponseEntity<UserResponse> updateUser(@RequestBody User user, @PathVariable int id) {
+    public ResponseEntity<String> updateUser(@RequestBody UserRequestDTO user, @PathVariable int id) {
         UserResponse updatedUser = userService.updateUser(user,id);
-        return ResponseEntity.ok(updatedUser);
+        return new ResponseEntity<>("Users is updated successfully!",HttpStatus.OK);
     }
 
     @DeleteMapping("/user/{id}")
