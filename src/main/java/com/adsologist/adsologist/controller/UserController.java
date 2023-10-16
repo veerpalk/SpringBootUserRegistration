@@ -21,7 +21,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping({ "", "/" })
+    @GetMapping({ ""})
     @ApiOperation(value = "Hello")
     public ResponseEntity<String> hello() {
         return new ResponseEntity<>("Hello to adsologist  app",HttpStatus.CREATED);
