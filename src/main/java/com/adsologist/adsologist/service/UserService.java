@@ -1,5 +1,6 @@
 package com.adsologist.adsologist.service;
 
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,21 +14,42 @@ import com.adsologist.adsologist.response.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpSession;
 
 @Service
 public class UserService {
-
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
-
     @Autowired
     private UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public UserResponse login(String username, String password) {
+        User userInDB = userRepository.findByUsername(username);
+        if (Objects.isNull(userInDB)) {
+            return new UserResponse();
+        }
+        if (!passwordEncoder.matches(password, userInDB.getPassword())) {
+                throw new BadCredentialsException("Invalid password");
+        }
+        return convertToUserResponse(userInDB);
+    }
+
+//    public Object isUserLoggedIn(Integer userId) {
+//        return session.getAttribute(String.valueOf(userId));
+//    }
+
 
     public UserResponse createUser(User user) {
         User foundUser = userRepository.findByUsername(user.getUsername());
         if(Objects.nonNull(foundUser)){
             throw new UserAlreadyExistsException("User with UserName: "+user.getUsername()+"Already exists in the database");
         }
+        // Hash the user's password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser =  userRepository.save(user);
         log.info("User saved with id: " + savedUser.getId());
 
@@ -45,6 +67,7 @@ public class UserService {
                 // User already exists, log it or take other action
                 existingUsers.add(existingUser.get());
             } else {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
                 newUsers.add(user);
             }
         }
@@ -115,7 +138,7 @@ public class UserService {
             oldUser.setEmail(user.getEmail());
             oldUser.setPhoneNumber(user.getPhoneNumber());
             oldUser.setUsername(user.getUsername());
-            oldUser.setPassword(user.getPassword());
+            oldUser.setPassword(passwordEncoder.encode(user.getPassword()));
            User savedUser = userRepository.save(oldUser);
            log.info("User updated with id: " + savedUser.getId());
 

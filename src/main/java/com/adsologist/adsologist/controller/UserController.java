@@ -1,6 +1,7 @@
 package com.adsologist.adsologist.controller;
 
 
+import com.adsologist.adsologist.dto.UserLoginDTO;
 import com.adsologist.adsologist.dto.UserRequestDTO;
 import com.adsologist.adsologist.entity.User;
 import com.adsologist.adsologist.response.UserResponse;
@@ -12,7 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Objects;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -25,6 +29,24 @@ public class UserController {
     @ApiOperation(value = "Hello")
     public ResponseEntity<String> hello() {
         return new ResponseEntity<>("Hello to adsologist  app",HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    @ApiOperation(value = "login user")
+    public ResponseEntity<UserResponse> login(@RequestBody UserLoginDTO loginUser, HttpSession httpSession) {
+        UserResponse user = userService.login(loginUser.getUsername(), loginUser.getPassword());
+        httpSession.setAttribute("USER_ID", String.valueOf(user.getId()));
+        return ResponseEntity.ok(user);
+    }
+    @GetMapping("/logout")
+    public String logout(HttpSession httpSession) {
+        httpSession.invalidate();
+        return "redirect:/login";
+    }
+    @GetMapping("/session-expired")
+    @ApiOperation(value = "session expired")
+    public ResponseEntity<String> sessionExpired() {
+        return new ResponseEntity<>("Session has expired!", HttpStatus.UNAUTHORIZED);
     }
     @PostMapping("/addUser")
     @ApiOperation(value = "Add User")
@@ -62,7 +84,7 @@ public class UserController {
     @DeleteMapping("/user/{id}")
     @ApiOperation(value = "Delete User")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
-         userService.deleteUserById(id);
+        userService.deleteUserById(id);
         return new ResponseEntity<>("Users got deleted!",HttpStatus.OK);
     }
 }

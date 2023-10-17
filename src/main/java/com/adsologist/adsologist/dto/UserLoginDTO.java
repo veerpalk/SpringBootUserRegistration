@@ -14,20 +14,11 @@ import javax.validation.constraints.NotBlank;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequestDTO {
-    @NotBlank(message = "Full Name is required")
-    private String fullName;
-
-    @Email(message = "Email Address is not valid")
-    @NotBlank(message = "Email Address is required")
-    private String email;
-
-    @NotBlank(message = "Phone Number is required")
-    private String phoneNumber;
-
+public class UserLoginDTO {
     @NotBlank(message = "Username is required")
     private String username;
 
     @NotBlank(message = "Password is required")
     private String password;
+
 }
